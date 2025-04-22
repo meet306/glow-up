@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GlowUp - Service Provider Dashboard</title>
+
+  <!-- Font Awesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="loans.css"/>
+  <!-- <link rel="stylesheet" href="desboard.css"/> -->
+  <style>
+    /* 🌐 General Reset */
+
+
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* 💡 No Service Message */
+.no-service-container {
+  background: #fff;
+  padding: 30px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+.no-service-container h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.no-service-container p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.no-service-container .btn-support {
+  padding: 12px 25px;
+  background-color: #1f2937;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s;
+}
+
+.no-service-container .btn-support:hover {
+  background-color: #4b5563;
+}
+
+/* 📱 Responsive Styles */
+@media (max-width: 768px) {
+  .no-service-container h2 {
+    font-size: 20px;
+  }
+
+  .no-service-container p {
+    font-size: 14px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <!-- Optional: Add Logo Image -->
+        <!-- <img src="logo.png" alt="GlowUp Logo"> -->
+        <span>GlowUp</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="desboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="orders.html"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+          <li class="active"><a href="loans.html"><i class="fas fa-hand-holding-usd"></i> Loans</a></li>
+          <li><a href="earnings.html"><i class="fas fa-coins"></i> Earnings</a></li>
+          <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+          <li><a href="#"><i class="fas fa-sign-out-alt"></i> Log-out</a></li>
+          <!-- <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li> -->
+      </ul>
+      
+      </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="no-service-container">
+          <h2>🚧 Service Unavailable</h2>
+          <p>We are currently unable to provide loan services. Please check back later, or feel free to reach out to our support team for more information.</p>
+          <a href="contact-us.html" class="btn-support">Contact Support</a>
+        </div>
+      </main>
+      
+
+    <!-- Main Content -->
+   </div>
+
+  <!-- JavaScript -->
+  <script src="loans.js"></script>
+</body>
+</html>
+ 

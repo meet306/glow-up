@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GLOWUP</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poetsen+One&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: #007bff;
+      font-family: 'Poetsen One', cursive;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #name {
+      font-size: 4rem;
+      color:  white;
+      text-align: center;
+    }
+
+    .line-loader {
+      width: 150px;
+      height: 4px;
+      background:  white;
+      margin-top: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .line-loader::before {
+      content: "";
+      position: absolute;
+      height: 100%;
+      width: 40px;
+      background: black;
+      animation: slide 1.2s infinite ease-in-out;
+    }
+
+    @keyframes slide {
+      0% {
+        left: -40px;
+      }
+      100% {
+        left: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="name">GLOWUP</div>
+  <div class="line-loader"></div>
+  <script src="../JS/loading.js"></script>
+</body>
+</html>

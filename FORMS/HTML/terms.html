@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terms & Conditions Popup</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .popup {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      animation: popupFade 0.3s ease-in-out;
+    }
+
+    @keyframes popupFade {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .popup h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .popup p {
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .show {
+      display: flex !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Terms & Conditions Popup -->
+  <div class="overlay" id="popupOverlay">
+    <div class="popup">
+      <h2>Terms and Conditions</h2>
+      <p>
+        By accessing this website, you agree to be bound by these terms and conditions. You must not use this website if you disagree with any of these terms. All content is for personal use only.
+      </p>
+      <p>
+        Unauthorized use may give rise to a claim for damages or be a criminal offense. We reserve the right to change these terms at any time.
+      </p>
+      <button class="btn" onclick="closePopup()">Back</button>
+    </div>
+  </div>
+
+  <script>
+    function openPopup() {
+      document.getElementById("popupOverlay").classList.add("show");
+    }
+
+    function closePopup() {
+      document.getElementById("popupOverlay").classList.remove("show");
+    }
+
+    // 👇 Automatically open popup on page load
+    window.onload = function () {
+      openPopup();
+    };
+  </script>
+
+</body>
+</html>
