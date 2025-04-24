@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Partner - Earnings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7e57c2;
+            --primary-dark: #5e35b1;
+            --primary-light: #b39ddb;
+            --secondary-color: #ede7f6;
+            --text-color: #333;
+            --light-text: #f5f5f5;
+            --success-color: #66bb6a;
+            --danger-color: #ef5350;
+            --warning-color: #ffa726;
+            --info-color: #42a5f5;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            font-size: 1.5rem;
+            margin-right: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: var(--primary-light);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .online-status {
+            display: flex;
+            align-items: center;
+            margin-right: 2rem;
+            position: relative;
+        }
+
+        .status-text {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: var(--transition);
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.5rem;
+            border: 2px solid var(--primary-light);
+        }
+
+        .profile-name {
+            font-size: 0.9rem;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            bottom: 0;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .menu-link i {
+            margin-right: 1rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 1rem;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(126, 87, 194, 0.2);
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Earnings Summary */
+        .earnings-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        .summary-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-info {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .summary-info i {
+            margin-right: 0.5rem;
+        }
+
+        .summary-card.success::before {
+            background-color: var(--success-color);
+        }
+
+        .summary-card.warning::before {
+            background-color: var(--warning-color);
+        }
+
+        .summary-card.info::before {
+            background-color: var(--info-color);
+        }
+
+        /* Earnings Chart */
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            height: 350px;
+            position: relative;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .chart-placeholder i {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: var(--primary-light);
+        }
+
+        /* Earnings Breakdown */
+        .earnings-breakdown {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+
+        .search-filter {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-filter input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 0.25rem;
+        }
+
+        .search-filter i {
+            color: #666;
+            margin-right: 0.5rem;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .breakdown-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background-color: var(--secondary-color);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .breakdown-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .customer-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.75rem;
+        }
+
+        .customer-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .customer-phone {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .earnings-amount {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Withdrawal Section */
+        .withdrawal-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .withdrawal-balance {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .balance-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .withdrawal-methods {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .method-card {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 200px;
+        }
+
+        .method-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .method-card.selected {
+            border-color: var(--primary-color);
+            background-color: var(--secondary-color);
+        }
+
+        .method-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .method-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .method-details {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .withdrawal-form {
+            margin-top: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(126, 87, 194, 0.2);
+        }
+
+        .withdrawal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 3000;
+        }
+
+        .toast {
+            background-color: white;
+            border-radius: 5px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            transform: translateX(150%);
+            transition: var(--transition);
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .toast-warning .toast-icon {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .toast-danger .toast-icon {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .toast-message {
+            flex-grow: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            margin-left: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pagination-list {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+        }
+
+        .pagination-item {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .pagination-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Mobile Bottom Navigation */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: none;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.7rem;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1001;
+                background-color: white;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-filter {
+                width: 200px;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .withdrawal-methods {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .online-status {
+                margin-right: 1rem;
+            }
+
+            .status-text {
+                display: none;
+            }
+
+            .profile-name {
+                display: none;
+            }
+
+            .breakdown-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .search-filter {
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 1.5rem 1rem;
+                padding-bottom: 70px;
+            }
+
+            .withdrawal-balance {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">Hy<span> Welcome</span></div>
+        </div>
+        <div class="header-right">
+            <!-- <div class="online-status">
+                <span class="status-text">Offline</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="status-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div> -->
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="profile-img">
+                <span class="profile-name">John Doe</span>
+                <div class="profile-dropdown">
+                    <a href="profile.html" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+                    <a href="settings.html" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="earnings.html" class="dropdown-item"><i class="fas fa-wallet"></i> Earnings</a>
+                    <a href="loans.html" class="dropdown-item"><i class="fas fa-file-invoice-dollar"></i> Loans</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-title">Main</li>
+            <li class="menu-item">
+                <a href="deshboard.html" class="menu-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="orders.html" class="menu-link">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="earnings.html" class="menu-link active">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="loans.html" class="menu-link">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Loans</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Kithshop.html" class="menu-link ">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Kit Shop</span>
+                </a>
+            </li>
+            <li class="menu-title">Account</li>
+            <li class="menu-item">
+                <a href="profile.html" class="menu-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="settings.html" class="menu-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="page-title">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Earnings</span>
+        </h1>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Date Range</label>
+                    <select class="filter-select">
+                        <option>This Week</option>
+                        <option>Last Week</option>
+                        <option>This Month</option>
+                        <option>Last Month</option>
+                        <option>Custom Range</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Earnings Type</label>
+                    <select class="filter-select">
+                        <option>All Earnings</option>
+                        <option>Delivery Fees</option>
+                        <option>Tips</option>
+                        <option>Bonuses</option>
+                        <option>Adjustments</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Sort By</label>
+                    <select class="filter-select">
+                        <option>Date (Newest First)</option>
+                        <option>Date (Oldest First)</option>
+                        <option>Amount (High to Low)</option>
+                        <option>Amount (Low to High)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-outline">
+                    <i class="fas fa-sync-alt"></i> Reset
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Earnings Summary -->
+        <div class="earnings-summary">
+            <div class="summary-card">
+                <h3 class="summary-title">Total Earnings</h3>
+                <p class="summary-value">$1,245.50</p>
+                <p class="summary-info">
+                    <i class="fas fa-arrow-up text-success"></i>
+                    <span>15% from last week</span>
+                </p>
+            </div>
+            <div class="summary-card success">
+                <h3 class="summary-title">Completed Deliveries</h3>
+                <p class="summary-value">68</p>
+                <p class="summary-info">
+                    <i class="fas fa-check-circle"></i>
+                    <span>12 more than last week</span>
+                </p>
+            </div>
+            <div class="summary-card warning">
+                <h3 class="summary-title">Average Tip</h3>
+                <p class="summary-value">$3.20</p>
+                <p class="summary-info">
+                    <i class="fas fa-star"></i>
+                    <span>From 54 deliveries</span>
+                </p>
+            </div>
+            <div class="summary-card info">
+                <h3 class="summary-title">Bonus Earnings</h3>
+                <p class="summary-value">$85.00</p>
+                <p class="summary-info">
+                    <i class="fas fa-gift"></i>
+                    <span>Peak hours & challenges</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Earnings Chart -->
+        <div class="chart-container">
+            <div class="section-header">
+                <h2 class="section-title">Earnings Overview</h2>
+            </div>
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-line"></i>
+                <span>Earnings chart will be displayed here</span>
+            </div>
+        </div>
+
+        <!-- Earnings Breakdown -->
+        <div class="earnings-breakdown">
+            <div class="section-header">
+                <h2 class="section-title">Earnings Breakdown</h2>
+                <div class="search-filter">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search earnings...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>May 15, 2023</td>
+                            <td class="order-id">#ORD-7843</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Emily Davis</div>
+                                        <div class="customer-phone">+1 456 789 012</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Delivery Fee</td>
+                            <td class="earnings-amount">$4.50</td>
+                        </tr>
+                        <tr>
+                            <td>May 15, 2023</td>
+                            <td class="order-id">#ORD-7843</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Emily Davis</div>
+                                        <div class="customer-phone">+1 456 789 012</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Tip</td>
+                            <td class="earnings-amount">$3.00</td>
+                        </tr>
+                        <tr>
+                            <td>May 14, 2023</td>
+                            <td class="order-id">#ORD-7842</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Robert Wilson</div>
+                                        <div class="customer-phone">+1 567 890 123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Delivery Fee</td>
+                            <td class="earnings-amount">$5.20</td>
+                        </tr>
+                        <tr>
+                            <td>May 14, 2023</td>
+                            <td class="order-id">#ORD-7842</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Robert Wilson</div>
+                                        <div class="customer-phone">+1 567 890 123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Tip</td>
+                            <td class="earnings-amount">$4.50</td>
+                        </tr>
+                        <tr>
+                            <td>May 14, 2023</td>
+                            <td class="order-id">#ORD-7841</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Jessica Lee</div>
+                                        <div class="customer-phone">+1 678 901 234</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Delivery Fee</td>
+                            <td class="earnings-amount">$4.80</td>
+                        </tr>
+                        <tr>
+                            <td>May 13, 2023</td>
+                            <td class="order-id">#ORD-7840</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/36.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">David Miller</div>
+                                        <div class="customer-phone">+1 789 012 345</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Delivery Fee</td>
+                            <td class="earnings-amount">$5.50</td>
+                        </tr>
+                        <tr>
+                            <td>May 13, 2023</td>
+                            <td class="order-id">#ORD-7840</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/36.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">David Miller</div>
+                                        <div class="customer-phone">+1 789 012 345</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Bonus</td>
+                            <td class="earnings-amount">$10.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul class="pagination-list">
+                    <li class="pagination-item">
+                        <i class="fas fa-chevron-left"></i>
+                    </li>
+                    <li class="pagination-item active">1</li>
+                    <li class="pagination-item">2</li>
+                    <li class="pagination-item">3</li>
+                    <li class="pagination-item">4</li>
+                    <li class="pagination-item">5</li>
+                    <li class="pagination-item">
+                        <i class="fas fa-chevron-right"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="withdrawal-section">
+            <div class="section-header">
+                <h2 class="section-title">Withdraw Earnings</h2>
+            </div>
+            <div class="withdrawal-balance">
+                <div>
+                    <div class="filter-label">Available Balance</div>
+                    <div class="balance-amount">$872.30</div>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="fas fa-history"></i> Transaction History
+                </button>
+            </div>
+            <div class="withdrawal-methods">
+                <div class="method-card selected">
+                    <div class="method-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="method-name">Bank Transfer</div>
+                    <div class="method-details">2-3 business days</div>
+                </div>
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fab fa-paypal"></i>
+                    </div>
+                    <div class="method-name">PayPal</div>
+                    <div class="method-details">Instant transfer</div>
+                </div>
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="method-name">Cash Pickup</div>
+                    <div class="method-details">Next business day</div>
+                </div>
+            </div>
+            <div class="withdrawal-form">
+                <div class="form-group">
+                    <label class="form-label">Withdrawal Amount</label>
+                    <input type="text" class="form-input" placeholder="Enter amount to withdraw" value="$872.30">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bank Account</label>
+                    <select class="form-input">
+                        <option>Chase ****5678 (Primary)</option>
+                        <option>Bank of America ****9012</option>
+                        <option>Add new bank account</option>
+                    </select>
+                </div>
+                <div class="withdrawal-actions">
+                    <button class="btn btn-outline">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Request Withdrawal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- Withdrawal Section -->
+        <div class="withdrawal-section">
+            <div class="section-header">
+                <h2 class="section-title">Withdraw Earnings</h2>
+            </div>
+            <div class="withdrawal-balance">
+                <div>
+                    <div class="filter-label">Available Balance</div>
+                    <div class="balance-amount">$872.30</div>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="fas fa-history"></i> Transaction History
+                </button>
+            </div>
+            <div class="withdrawal-methods">
+                <div class="method-card selected">
+                    <div class="method-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="method-name">Bank Transfer</div>
+                    <div class="method-details">2-3 business days</div>
+                </div>
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fab fa-paypal"></i>
+                    </div>
+                    <div class="method-name">PayPal</div>
+                    <div class="method-details">Instant transfer</div>
+                </div>
+                <div class="method-card">
+                    <div class="method-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="method-name">Cash Pickup</div>
+                    <div class="method-details">Next business day</div>
+                </div>
+            </div>
+            <div class="withdrawal-form">
+                <div class="form-group">
+                    <label class="form-label">Withdrawal Amount</label>
+                    <input type="text" class="form-input" placeholder="Enter amount to withdraw" value="$872.30">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bank Account</label>
+                    <select class="form-input">
+                        <option>Chase ****5678 (Primary)</option>
+                        <option>Bank of America ****9012</option>
+                        <option>Add new bank account</option>
+                    </select>
+                </div>
+                <div class="withdrawal-actions">
+                    <button class="btn btn-outline">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Request Withdrawal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast-container">
+        <div class="toast toast-success">
+            <div class="toast-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="toast-message">You are now online and ready to accept orders!</div>
+            <button class="toast-close">&times;</button>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="deshboard.html" class="mobile-nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="orders.html" class="mobile-nav-item">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Orders</span>
+        </a>
+        <a href="earnings.html" class="mobile-nav-item active">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Earnings</span>
+        </a>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+                mainContent.classList.toggle('expanded');
+            });
+
+            // Toggle online status
+            const statusToggle = document.getElementById('status-toggle');
+            const statusText = document.querySelector('.status-text');
+            const toast = document.querySelector('.toast');
+            
+            statusToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    statusText.textContent = 'Online';
+                    showToast('You are now online and ready to accept orders!', 'success');
+                } else {
+                    statusText.textContent = 'Offline';
+                    showToast('You are now offline and won\'t receive new orders.', 'warning');
+                }
+            });
+
+            // Profile dropdown
+            const profile = document.querySelector('.user-profile');
+            const dropdown = document.querySelector('.profile-dropdown');
+            
+            profile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdown.classList.remove('show');
+            });
+
+            // Payment method selection
+            const methodCards = document.querySelectorAll('.method-card');
+            
+            methodCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    methodCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Show toast notification
+            function showToast(message, type) {
+                const toast = document.querySelector('.toast');
+                const toastMessage = toast.querySelector('.toast-message');
+                
+                toast.className = `toast toast-${type}`;
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
+
+            // Close toast
+            const toastClose = document.querySelector('.toast-close');
+            toastClose.addEventListener('click', function() {
+                this.closest('.toast').classList.remove('show');
+            });
+
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('expanded');
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            handleResize();
+        });
+    </script>
+</body>
+</html>

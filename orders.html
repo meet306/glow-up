@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Partner - Orders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7e57c2;
+            --primary-dark: #5e35b1;
+            --primary-light: #b39ddb;
+            --secondary-color: #ede7f6;
+            --text-color: #333;
+            --light-text: #f5f5f5;
+            --success-color: #66bb6a;
+            --danger-color: #ef5350;
+            --warning-color: #ffa726;
+            --info-color: #42a5f5;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            font-size: 1.5rem;
+            margin-right: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: var(--primary-light);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .online-status {
+            display: flex;
+            align-items: center;
+            margin-right: 2rem;
+            position: relative;
+        }
+
+        .status-text {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: var(--transition);
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.5rem;
+            border: 2px solid var(--primary-light);
+        }
+
+        .profile-name {
+            font-size: 0.9rem;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            bottom: 0;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .menu-link i {
+            margin-right: 1rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 1rem;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(126, 87, 194, 0.2);
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Orders Section */
+        .orders-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+
+        .search-filter {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-filter input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 0.25rem;
+        }
+
+        .search-filter i {
+            color: #666;
+            margin-right: 0.5rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .orders-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background-color: var(--secondary-color);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .orders-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .customer-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.75rem;
+        }
+
+        .customer-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .customer-phone {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-accepted {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-delivered {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-rejected {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .status-cancelled {
+            background-color: #f5f5f5;
+            color: #616161;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #4caf50;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e53935;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Order Details Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .order-modal {
+            background-color: white;
+            border-radius: 8px;
+            width: 800px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show .order-modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 1;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .order-detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-title {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            width: 150px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 0.75rem;
+            background-color: var(--secondary-color);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .items-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal {
+            background-color: white;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 3000;
+        }
+
+        .toast {
+            background-color: white;
+            border-radius: 5px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            transform: translateX(150%);
+            transition: var(--transition);
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .toast-warning .toast-icon {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .toast-danger .toast-icon {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .toast-message {
+            flex-grow: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            margin-left: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pagination-list {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+        }
+
+        .pagination-item {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .pagination-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Mobile Bottom Navigation */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: none;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.7rem;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1001;
+                background-color: white;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-filter {
+                width: 200px;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .online-status {
+                margin-right: 1rem;
+            }
+
+            .status-text {
+                display: none;
+            }
+
+            .profile-name {
+                display: none;
+            }
+
+            .orders-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .search-filter {
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 1.5rem 1rem;
+                padding-bottom: 70px;
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .detail-label {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">Hy<span> Welcome</span></div>
+        </div>
+        <div class="header-right">
+            <!-- <div class="online-status">
+                <span class="status-text">Offline</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="status-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div> -->
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="profile-img">
+                <span class="profile-name">John Doe</span>
+                <div class="profile-dropdown">
+                    <a href="profile.html" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+                    <a href="settings.html" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="earnings.html" class="dropdown-item"><i class="fas fa-wallet"></i> Earnings</a>
+                    <a href="loans.html" class="dropdown-item"><i class="fas fa-file-invoice-dollar"></i> Loans</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-title">Main</li>
+            <li class="menu-item">
+                <a href="deshboard.html" class="menu-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href=" orders.html" class="menu-link active">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="earnings.html" class="menu-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="loans.html" class="menu-link">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Loans</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="Kithshop.html" class="menu-link ">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Kit Shop</span>
+                </a>
+            </li>
+            
+            <li class="menu-title">Account</li>
+            <li class="menu-item">
+                <a href="profile.html" class="menu-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="settings.html" class="menu-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="page-title">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Orders</span>
+        </h1>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Date Range</label>
+                    <select class="filter-select">
+                        <option>Today</option>
+                        <option>Yesterday</option>
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                        <option>Custom Range</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Order Status</label>
+                    <select class="filter-select">
+                        <option>All Statuses</option>
+                        <option>Pending</option>
+                        <option>Accepted</option>
+                        <option>In Transit</option>
+                        <option>Delivered</option>
+                        <option>Rejected</option>
+                        <option>Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Restaurant</label>
+                    <select class="filter-select">
+                        <option>All Restaurants</option>
+                        <option>Burger King</option>
+                        <option>McDonald's</option>
+                        <option>Pizza Hut</option>
+                        <option>Subway</option>
+                        <option>KFC</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-outline">
+                    <i class="fas fa-sync-alt"></i> Reset
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="orders-container">
+            <div class="section-header">
+                <h2 class="section-title">Recent Orders</h2>
+                <div class="search-filter">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search orders...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Restaurant</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="order-id">#ORD-7845</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Sarah Johnson</div>
+                                        <div class="customer-phone">+1 234 567 890</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Burger King</td>
+                            <td>$24.50</td>
+                            <td><span class="order-status status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-success btn-sm accept-btn">
+                                        <i class="fas fa-check"></i> Accept
+                                    </button>
+                                    <button class="btn btn-danger btn-sm reject-btn">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7844</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Michael Brown</div>
+                                        <div class="customer-phone">+1 345 678 901</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Pizza Hut</td>
+                            <td>$18.75</td>
+                            <td><span class="order-status status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-success btn-sm accept-btn">
+                                        <i class="fas fa-check"></i> Accept
+                                    </button>
+                                    <button class="btn btn-danger btn-sm reject-btn">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7843</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Emily Davis</div>
+                                        <div class="customer-phone">+1 456 789 012</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Subway</td>
+                            <td>$12.30</td>
+                            <td><span class="order-status status-accepted">Accepted</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm view-details-btn">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-directions"></i> Navigate
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7842</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Robert Wilson</div>
+                                        <div class="customer-phone">+1 567 890 123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>McDonald's</td>
+                            <td>$15.20</td>
+                            <td><span class="order-status status-delivered">Delivered</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm view-details-btn">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7841</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Jessica Lee</div>
+                                        <div class="customer-phone">+1 678 901 234</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>KFC</td>
+                            <td>$21.40</td>
+                            <td><span class="order-status status-rejected">Rejected</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm view-details-btn">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7840</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/36.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">David Miller</div>
+                                        <div class="customer-phone">+1 789 012 345</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Burger King</td>
+                            <td>$19.80</td>
+                            <td><span class="order-status status-cancelled">Cancelled</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm view-details-btn">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul class="pagination-list">
+                    <li class="pagination-item">
+                        <i class="fas fa-chevron-left"></i>
+                    </li>
+                    <li class="pagination-item active">1</li>
+                    <li class="pagination-item">2</li>
+                    <li class="pagination-item">3</li>
+                    <li class="pagination-item">4</li>
+                    <li class="pagination-item">5</li>
+                    <li class="pagination-item">
+                        <i class="fas fa-chevron-right"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Details Modal -->
+    <div class="modal-overlay" id="order-details-modal">
+        <div class="order-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Order Details - #ORD-7843</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-detail-section">
+                    <h4 class="detail-title">Order Information</h4>
+                    <div class="detail-row">
+                        <div class="detail-label">Order ID</div>
+                        <div class="detail-value">#ORD-7843</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Order Date</div>
+                        <div class="detail-value">May 15, 2023 - 12:45 PM</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value"><span class="order-status status-accepted">Accepted</span></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Restaurant</div>
+                        <div class="detail-value">Subway - 123 Main Street</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Delivery Address</div>
+                        <div class="detail-value">456 Elm Avenue, Apt 3B, New York, NY 10001</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Delivery Instructions</div>
+                        <div class="detail-value">Ring doorbell twice, leave at front door</div>
+                    </div>
+                </div>
+
+                <div class="order-detail-section">
+                    <h4 class="detail-title">Customer Information</h4>
+                    <div class="detail-row">
+                        <div class="detail-label">Name</div>
+                        <div class="detail-value">Emily Davis</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Phone</div>
+                        <div class="detail-value">+1 456 789 012</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">emily.davis@example.com</div>
+                    </div>
+                </div>
+
+                <div class="order-detail-section">
+                    <h4 class="detail-title">Order Items</h4>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Italian B.M.T. Sandwich</td>
+                                <td>1</td>
+                                <td>$6.50</td>
+                                <td>$6.50</td>
+                            </tr>
+                            <tr>
+                                <td>Chips</td>
+                                <td>1</td>
+                                <td>$1.50</td>
+                                <td>$1.50</td>
+                            </tr>
+                            <tr>
+                                <td>Chocolate Chip Cookie</td>
+                                <td>2</td>
+                                <td>$1.00</td>
+                                <td>$2.00</td>
+                            </tr>
+                            <tr>
+                                <td>Diet Coke (20oz)</td>
+                                <td>1</td>
+                                <td>$2.30</td>
+                                <td>$2.30</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="order-detail-section">
+                    <h4 class="detail-title">Payment Summary</h4>
+                    <div class="detail-row">
+                        <div class="detail-label">Subtotal</div>
+                        <div class="detail-value">$12.30</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Delivery Fee</div>
+                        <div class="detail-value">$2.99</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Tax</div>
+                        <div class="detail-value">$1.23</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Tip</div>
+                        <div class="detail-value">$3.00</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Total</div>
+                        <div class="detail-value"><strong>$19.52</strong></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Payment Method</div>
+                        <div class="detail-value">Credit Card (VISA ****4242)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary">
+                    <i class="fas fa-directions"></i> Navigate
+                </button>
+                <button class="btn btn-outline modal-close">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmation-modal">
+        <div class="confirmation-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Action</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message">Are you sure you want to reject this order? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger confirm-reject">Yes, Reject</button>
+                <button class="btn btn-primary modal-close">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container">
+        <div class="toast toast-success">
+            <div class="toast-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="toast-message">You are now online and ready to accept orders!</div>
+            <button class="toast-close">&times;</button>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="deshboard.html" class="mobile-nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="orders.html" class="mobile-nav-item active">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Orders</span>
+        </a>
+        <a href="earnings.html" class="mobile-nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Earnings</span>
+        </a>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+                mainContent.classList.toggle('expanded');
+            });
+
+            // Toggle online status
+            const statusToggle = document.getElementById('status-toggle');
+            const statusText = document.querySelector('.status-text');
+            const toast = document.querySelector('.toast');
+            
+            statusToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    statusText.textContent = 'Online';
+                    showToast('You are now online and ready to accept orders!', 'success');
+                } else {
+                    statusText.textContent = 'Offline';
+                    showToast('You are now offline and won\'t receive new orders.', 'warning');
+                }
+            });
+
+            // Profile dropdown
+            const profile = document.querySelector('.user-profile');
+            const dropdown = document.querySelector('.profile-dropdown');
+            
+            profile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdown.classList.remove('show');
+            });
+
+            // Order actions
+            const rejectButtons = document.querySelectorAll('.reject-btn');
+            const modal = document.getElementById('confirmation-modal');
+            const modalCloseButtons = document.querySelectorAll('.modal-close');
+            const confirmReject = document.querySelector('.confirm-reject');
+            
+            rejectButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modal.classList.add('show');
+                });
+            });
+
+            modalCloseButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        modal.classList.remove('show');
+                    });
+                });
+            });
+
+            confirmReject.addEventListener('click', function() {
+                // In a real app, you would send an API request here
+                const orderRow = rejectButtons[0].closest('tr');
+                orderRow.querySelector('.order-status').textContent = 'Rejected';
+                orderRow.querySelector('.order-status').className = 'order-status status-rejected';
+                orderRow.querySelector('.action-buttons').innerHTML = `
+                    <button class="btn btn-primary btn-sm view-details-btn">
+                        <i class="fas fa-eye"></i> Details
+                    </button>
+                `;
+                modal.classList.remove('show');
+                showToast('Order has been rejected.', 'danger');
+            });
+
+            // Accept order button
+            const acceptButtons = document.querySelectorAll('.accept-btn');
+            
+            acceptButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderRow = button.closest('tr');
+                    orderRow.querySelector('.order-status').textContent = 'Accepted';
+                    orderRow.querySelector('.order-status').className = 'order-status status-accepted';
+                    orderRow.querySelector('.action-buttons').innerHTML = `
+                        <button class="btn btn-primary btn-sm view-details-btn">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-directions"></i> Navigate
+                        </button>
+                    `;
+                    showToast('Order accepted successfully!', 'success');
+                });
+            });
+
+            // View details button
+            const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+            const orderDetailsModal = document.getElementById('order-details-modal');
+            
+            viewDetailsButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    orderDetailsModal.classList.add('show');
+                });
+            });
+
+            // Show toast notification
+            function showToast(message, type) {
+                const toast = document.querySelector('.toast');
+                const toastMessage = toast.querySelector('.toast-message');
+                
+                toast.className = `toast toast-${type}`;
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
+
+            // Close toast
+            const toastClose = document.querySelector('.toast-close');
+            toastClose.addEventListener('click', function() {
+                this.closest('.toast').classList.remove('show');
+            });
+
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('expanded');
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            handleResize();
+        });
+    </script>
+</body>
+</html>

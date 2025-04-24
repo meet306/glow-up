@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7e57c2;
+            --primary-dark: #5e35b1;
+            --primary-light: #b39ddb;
+            --secondary-color: #ede7f6;
+            --text-color: #333;
+            --light-text: #f5f5f5;
+            --success-color: #66bb6a;
+            --danger-color: #ef5350;
+            --warning-color: #ffa726;
+            --info-color: #42a5f5;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: var(--primary-light);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-top: 70px;
+            padding: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 1rem;
+        }
+
+        .order-details-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .order-detail {
+            margin-bottom: 1rem;
+        }
+
+        .order-detail label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .order-detail p {
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .customer-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #4caf50;
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #2196f3;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* OTP Section */
+        .otp-section {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .otp-section.show {
+            display: block;
+        }
+
+        .otp-input {
+            padding: 0.5rem;
+            width: 100%;
+            max-width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(126, 87, 194, 0.3);
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 3000;
+        }
+
+        .toast {
+            background-color: white;
+            border-radius: 5px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            transform: translateX(150%);
+            transition: var(--transition);
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .toast-message {
+            flex-grow: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            margin-left: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .customer-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .otp-input {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .order-details-container {
+                padding: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">Hy<span> Welcome</span></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="page-title">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Order Details</span>
+        </h1>
+
+        <div class="order-details-container">
+            <div class="order-detail">
+                <label>Order ID</label>
+                <p id="order-id">Loading...</p>
+            </div>
+            <div class="order-detail customer-info">
+                <img id="customer-img" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" class="customer-img">
+                <div>
+                    <label>Customer Name</label>
+                    <p id="customer-name">Loading...</p>
+                    <label>Phone</label>
+                    <p id="customer-phone">Loading...</p>
+                    <label>Delivery Address</label>
+                    <p id="customer-address">Loading...</p>
+                </div>
+            </div>
+            <div class="order-detail">
+                <label>Restaurant</label>
+                <p id="restaurant">Loading...</p>
+            </div>
+            <div class="order-detail">
+                <label>Amount</label>
+                <p id="amount">Loading...</p>
+            </div>
+            <div class="order-detail">
+                <label>Status</label>
+                <p id="status">Loading...</p>
+            </div>
+            <div class="action-buttons">
+                <a id="map-button" href="#" target="_blank" class="btn btn-info">
+                    <i class="fas fa-map-marker-alt"></i> View on Google Maps
+                </a>
+                <button id="reach-button" class="btn btn-success">
+                    <i class="fas fa-location-arrow"></i> Reach
+                </button>
+                <a href="deshboard.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+            <div class="otp-section" id="otp-section">
+                <label for="otp-input">Enter OTP</label>
+                <input type="text" id="otp-input" class="otp-input" placeholder="Enter 4-digit OTP" maxlength="4">
+                <button id="confirm-otp" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Confirm OTP
+                </button>
+                <!-- Simulate Customer Confirmation (for testing) -->
+                <button id="simulate-customer-confirm" class="btn btn-warning" style="margin-top: 1rem;">
+                    <i class="fas fa-user-check"></i> Simulate Customer Confirmation
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast-container">
+        <div class="toast toast-success">
+            <div class="toast-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="toast-message" id="toast-message">Order delivered successfully!</div>
+            <button class="toast-close">×</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample order data (replace with actual data from backend or API)
+            const orders = {
+                '#ORD-7845': {
+                    customerName: 'Sarah Johnson',
+                    customerPhone: '+1 234 567 890',
+                    customerImg: 'https://randomuser.me/api/portraits/women/44.jpg',
+                    customerAddress: '123 Main St, Springfield, IL 62701',
+                    restaurant: 'Burger King',
+                    amount: '$24.50',
+                    status: 'Accepted',
+                    otp: '1234' // Sample OTP for testing
+                },
+                '#ORD-7844': {
+                    customerName: 'Michael Brown',
+                    customerPhone: '+1 345 678 901',
+                    customerImg: 'https://randomuser.me/api/portraits/men/22.jpg',
+                    customerAddress: '456 Oak Ave, Chicago, IL 60601',
+                    restaurant: 'Pizza Hut',
+                    amount: '$18.75',
+                    status: 'Accepted',
+                    otp: '5678'
+                },
+                '#ORD-7843': {
+                    customerName: 'Emily Davis',
+                    customerPhone: '+1 456 789 012',
+                    customerImg: 'https://randomuser.me/api/portraits/women/33.jpg',
+                    customerAddress: '789 Pine Rd, Naperville, IL 60540',
+                    restaurant: 'Subway',
+                    amount: '$12.30',
+                    status: 'Accepted',
+                    otp: '9012'
+                },
+                '#ORD-7842': {
+                    customerName: 'Robert Wilson',
+                    customerPhone: '+1 567 890 123',
+                    customerImg: 'https://randomuser.me/api/portraits/men/45.jpg',
+                    customerAddress: '321 Elm St, Aurora, IL 60506',
+                    restaurant: 'McDonald\'s',
+                    amount: '$15.20',
+                    status: 'Delivered',
+                    otp: '3456'
+                }
+            };
+
+            // Get order ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+
+            // Display order details
+            if (orderId && orders[orderId]) {
+                const order = orders[orderId];
+                document.getElementById('order-id').textContent = orderId;
+                document.getElementById('customer-name').textContent = order.customerName;
+                document.getElementById('customer-phone').textContent = order.customerPhone;
+                document.getElementById('customer-img').src = order.customerImg;
+                document.getElementById('customer-address').textContent = order.customerAddress;
+                document.getElementById('restaurant').textContent = order.restaurant;
+                document.getElementById('amount').textContent = order.amount;
+                document.getElementById('status').textContent = order.status;
+                // Set Google Maps link
+                const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.customerAddress)}`;
+                document.getElementById('map-button').href = mapUrl;
+            } else {
+                document.getElementById('order-id').textContent = 'Order not found';
+                document.getElementById('customer-name').textContent = 'N/A';
+                document.getElementById('customer-phone').textContent = 'N/A';
+                document.getElementById('customer-img').src = 'https://via.placeholder.com/60';
+                document.getElementById('customer-address').textContent = 'N/A';
+                document.getElementById('restaurant').textContent = 'N/A';
+                document.getElementById('amount').textContent = 'N/A';
+                document.getElementById('status').textContent = 'N/A';
+                document.getElementById('map-button').style.display = 'none';
+                document.getElementById('reach-button').style.display = 'none';
+            }
+
+            // Reach button handler
+            const reachButton = document.getElementById('reach-button');
+            const otpSection = document.getElementById('otp-section');
+            reachButton.addEventListener('click', function() {
+                otpSection.classList.add('show');
+                reachButton.style.display = 'none';
+            });
+
+            // Confirm OTP handler
+            const confirmOtpButton = document.getElementById('confirm-otp');
+            const otpInput = document.getElementById('otp-input');
+            let customerConfirmed = false;
+
+            confirmOtpButton.addEventListener('click', function() {
+                const enteredOtp = otpInput.value.trim();
+                const expectedOtp = orders[orderId]?.otp;
+                if (!customerConfirmed) {
+                    showToast('Waiting for customer confirmation.', 'warning');
+                } else if (enteredOtp === expectedOtp) {
+                    // OTP verified, update status and redirect
+                    if (orders[orderId]) {
+                        orders[orderId].status = 'Delivered';
+                        document.getElementById('status').textContent = 'Delivered';
+                    }
+                    showToast('Order delivered successfully! Redirecting to dashboard...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'deshboard.html';
+                    }, 3000); // Delay to show toast
+                } else {
+                    showToast('Invalid OTP. Please try again.', 'danger');
+                    otpInput.value = '';
+                }
+            });
+
+            // Simulate customer confirmation (for testing)
+            const simulateConfirmButton = document.getElementById('simulate-customer-confirm');
+            simulateConfirmButton.addEventListener('click', function() {
+                customerConfirmed = true;
+                showToast('Customer has confirmed the OTP.', 'success');
+                simulateConfirmButton.style.display = 'none';
+            });
+
+            // Show toast notification
+            function showToast(message, type) {
+                const toast = document.querySelector('.toast');
+                const toastMessage = document.getElementById('toast-message');
+                
+                toast.className = `toast toast-${type}`;
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
+
+            // Close toast
+            const toastClose = document.querySelector('.toast-close');
+            toastClose.addEventListener('click', function() {
+                this.closest('.toast').classList.remove('show');
+            });
+        });
+    </script>
+</body>
+</html>

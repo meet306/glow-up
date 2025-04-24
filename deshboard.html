@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Partner Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7e57c2;
+            --primary-dark: #5e35b1;
+            --primary-light: #b39ddb;
+            --secondary-color: #ede7f6;
+            --text-color: #333;
+            --light-text: #f5f5f5;
+            --success-color: #66bb6a;
+            --danger-color: #ef5350;
+            --warning-color: #ffa726;
+            --info-color: #42a5f5;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            font-size: 1.5rem;
+            margin-right: 1.5rem;
+            /* color: var(--light-text); */
+            background-color: #7e57c2;
+            color: white;
+            cursor: pointer;
+            display: none;
+            box-shadow: none;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: var(--primary-light);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .online-status {
+            display: flex;
+            align-items: center;
+            margin-right: 2rem;
+            position: relative;
+        }
+
+        .status-text {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: var(--transition);
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.5rem;
+            border: 2px solid var(--primary-light);
+        }
+
+        .profile-name {
+            font-size: 0.9rem;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            bottom: 0;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .menu-link i {
+            margin-right: 1rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 1rem;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-info {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .stat-info i {
+            margin-right: 0.5rem;
+        }
+
+        .stat-card.success::before {
+            background-color: var(--success-color);
+        }
+
+        .stat-card.warning::before {
+            background-color: var(--warning-color);
+        }
+
+        .stat-card.info::before {
+            background-color: var(--info-color);
+        }
+
+        /* Orders Section */
+        .orders-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+
+        .search-filter {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+            max-width: 100%;
+        }
+
+        .search-filter input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 0.25rem;
+        }
+
+        .search-filter i {
+            color: #666;
+            margin-right: 0.5rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .orders-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background-color: var(--secondary-color);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .orders-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .customer-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.75rem;
+        }
+
+        .customer-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .customer-phone {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-accepted {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-delivered {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-rejected {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #4caf50;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e53935;
+        }
+
+        /* Confirmation Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirmation-modal {
+            background-color: white;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show .confirmation-modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-message {
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .confirm-action.accept {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .confirm-action.accept:hover {
+            background-color: #4caf50;
+        }
+
+        .confirm-action.reject {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .confirm-action.reject:hover {
+            background-color: #e53935;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 3000;
+        }
+
+        .toast {
+            background-color: white;
+            border-radius: 5px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            transform: translateX(150%);
+            transition: var(--transition);
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .toast-warning .toast-icon {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .toast-danger .toast-icon {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .toast-message {
+            flex-grow: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            margin-left: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* Mobile Bottom Navigation */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: none;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.7rem;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .mobile-nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1001;
+                background-color: white;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+                box-shadow: none;
+            }
+
+            .search-filter {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .online-status {
+                margin-right: 1rem;
+            }
+
+            .status-text {
+                display: none;
+            }
+
+            .profile-name {
+                display: none;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .orders-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .orders-table th, .orders-table td {
+                min-width: 120px;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .search-filter {
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 1.5rem 1rem;
+                padding-bottom: 70px;
+            }
+
+            .modal-overlay .confirmation-modal {
+                width: 90%;
+            }
+        }
+
+        /* Mobile Table Card View */
+        @media (max-width: 768px) {
+            .orders-table {
+                display: none;
+            }
+
+            .orders-list {
+                display: block;
+            }
+
+            .order-card {
+                background-color: #fff;
+                border-radius: 8px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: var(--shadow);
+            }
+
+            .order-card.hidden {
+                display: none;
+            }
+
+            .order-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .order-card-id {
+                font-weight: 600;
+                color: var(--primary-dark);
+            }
+
+            .order-card-status {
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+
+            .order-card-body {
+                margin-bottom: 0.5rem;
+            }
+
+            .order-card-footer {
+                display: flex;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">Hy<span> Welcome</span></div>
+        </div>
+        <div class="header-right">
+            <div class="online-status">
+                <span class="status-text">Offline</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="status-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="profile-img">
+                <span class="profile-name">John Doe</span>
+                <div class="profile-dropdown">
+                    <a href="profile.html" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+                    <a href="settings.html" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="earnings.html" class="dropdown-item"><i class="fas fa-wallet"></i> Earnings</a>
+                    <a href="loans.html" class="dropdown-item"><i class="fas fa-file-invoice-dollar"></i> Loans</a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-title">Main</li>
+            <li class="menu-item">
+                <a href="deshboard.html" class="menu-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="orders.html" class="menu-link">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="earnings.html" class="menu-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="loans.html" class="menu-link">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Loans</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="Kithshop.html" class="menu-link ">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Kit Shop</span>
+                </a>
+            </li>
+            
+            <li class="menu-title">Account</li>
+            <li class="menu-item">
+                <a href="profile.html" class="menu-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="settings.html" class="menu-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="page-title">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </h1>
+
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3 class="stat-title">Today's Earnings</h3>
+                <p class="stat-value">$245.50</p>
+                <p class="stat-info">
+                    <i class="fas fa-arrow-up text-success"></i>
+                    <span>12% from yesterday</span>
+                </p>
+            </div>
+            <div class="stat-card success">
+                <h3 class="stat-title">Completed Orders</h3>
+                <p class="stat-value">18</p>
+                <p class="stat-info">
+                    <i class="fas fa-check-circle"></i>
+                    <span>5 more than yesterday</span>
+                </p>
+            </div>
+            <div class="stat-card warning">
+                <h3 class="stat-title">Average Rating</h3>
+                <p class="stat-value">4.7</p>
+                <p class="stat-info">
+                    <i class="fas fa-star"></i>
+                    <span>From 24 ratings</span>
+                </p>
+            </div>
+            <div class="stat-card info">
+                <h3 class="stat-title">Online Time</h3>
+                <p class="stat-value">5h 42m</p>
+                <p class="stat-info">
+                    <i class="fas fa-clock"></i>
+                    <span>Today's active time</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="orders-container">
+            <div class="section-header">
+                <h2 class="section-title">Today's Orders</h2>
+                <div class="search-filter">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-orders" placeholder="Search orders...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Restaurant</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="order-id">#ORD-7845</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Sarah Johnson</div>
+                                        <div class="customer-phone">+1 234 567 890</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Burger King</td>
+                            <td>$24.50</td>
+                            <td><span class="order-status status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-success btn-sm accept-btn">
+                                        <i class="fas fa-check"></i> Accept
+                                    </button>
+                                    <button class="btn btn-danger btn-sm reject-btn">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7844</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Michael Brown</div>
+                                        <div class="customer-phone">+1 345 678 901</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Pizza Hut</td>
+                            <td>$18.75</td>
+                            <td><span class="order-status status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-success btn-sm accept-btn">
+                                        <i class="fas fa-check"></i> Accept
+                                    </button>
+                                    <button class="btn btn-danger btn-sm reject-btn">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7843</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Emily Davis</div>
+                                        <div class="customer-phone">+1 456 789 012</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Subway</td>
+                            <td>$12.30</td>
+                            <td><span class="order-status status-accepted">Accepted</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-directions"></i> Navigate
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="order-id">#ORD-7842</td>
+                            <td>
+                                <div class="customer-info">
+                                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Customer" class="customer-img">
+                                    <div>
+                                        <div class="customer-name">Robert Wilson</div>
+                                        <div class="customer-phone">+1 567 890 123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>McDonald's</td>
+                            <td>$15.20</td>
+                            <td><span class="order-status status-delivered">Delivered</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Mobile Card View -->
+                <div class="orders-list" style="display: none;">
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <span class="order-card-id">#ORD-7845</span>
+                            <span class="order-card-status status-pending">Pending</span>
+                        </div>
+                        <div class="order-card-body">
+                            <p><strong>Customer:</strong> Sarah Johnson</p>
+                            <p><strong>Phone:</strong> +1 234 567 890</p>
+                            <p><strong>Restaurant:</strong> Burger King</p>
+                            <p><strong>Amount:</strong> $24.50</p>
+                        </div>
+                        <div class="order-card-footer">
+                            <button class="btn btn-success btn-sm accept-btn">
+                                <i class="fas fa-check"></i> Accept
+                            </button>
+                            <button class="btn btn-danger btn-sm reject-btn">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </div>
+                    </div>
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <span class="order-card-id">#ORD-7844</span>
+                            <span class="order-card-status status-pending">Pending</span>
+                        </div>
+                        <div class="order-card-body">
+                            <p><strong>Customer:</strong> Michael Brown</p>
+                            <p><strong>Phone:</strong> +1 345 678 901</p>
+                            <p><strong>Restaurant:</strong> Pizza Hut</p>
+                            <p><strong>Amount:</strong> $18.75</p>
+                        </div>
+                        <div class="order-card-footer">
+                            <button class="btn btn-success btn-sm accept-btn">
+                                <i class="fas fa-check"></i> Accept
+                            </button>
+                            <button class="btn btn-danger btn-sm reject-btn">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </div>
+                    </div>
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <span class="order-card-id">#ORD-7843</span>
+                            <span class="order-card-status status-accepted">Accepted</span>
+                        </div>
+                        <div class="order-card-body">
+                            <p><strong>Customer:</strong> Emily Davis</p>
+                            <p><strong>Phone:</strong> +1 456 789 012</p>
+                            <p><strong>Restaurant:</strong> Subway</p>
+                            <p><strong>Amount:</strong> $12.30</p>
+                        </div>
+                        <div class="order-card-footer">
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-directions"></i> Navigate
+                            </button>
+                        </div>
+                    </div>
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <span class="order-card-id">#ORD-7842</span>
+                            <span class="order-card-status status-delivered">Delivered</span>
+                        </div>
+                        <div class="order-card-body">
+                            <p><strong>Customer:</strong> Robert Wilson</p>
+                            <p><strong>Phone:</strong> +1 567 890 123</p>
+                            <p><strong>Restaurant:</strong> McDonald's</p>
+                            <p><strong>Amount:</strong> $15.20</p>
+                        </div>
+                        <div class="order-card-footer">
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmation-modal">
+        <div class="confirmation-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Action</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="modal-message">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn confirm-action" id="confirm-action">Yes, Confirm</button>
+                <button class="btn btn-primary modal-close">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container">
+        <div class="toast toast-success">
+            <div class="toast-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="toast-message">You are now online and ready to accept orders!</div>
+            <button class="toast-close">×</button>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="deshboard.html" class="mobile-nav-item active">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="orders.html" class="mobile-nav-item">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Orders</span>
+        </a>
+        <a href="earnings.html" class="mobile-nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Earnings</span>
+        </a>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+                mainContent.classList.toggle('expanded');
+            });
+
+            // Toggle online status
+            const statusToggle = document.getElementById('status-toggle');
+            const statusText = document.querySelector('.status-text');
+            
+            statusToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    statusText.textContent = 'Online';
+                    showToast('You are now online and ready to accept orders!', 'success');
+                } else {
+                    statusText.textContent = 'Offline';
+                    showToast('You are now offline and won\'t receive new orders.', 'warning');
+                }
+            });
+
+            // Profile dropdown
+            const profile = document.querySelector('.user-profile');
+            const dropdown = document.querySelector('.profile-dropdown');
+            
+            profile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdown.classList.remove('show');
+            });
+
+            // Order actions
+            const rejectButtons = document.querySelectorAll('.reject-btn');
+            const acceptButtons = document.querySelectorAll('.accept-btn');
+            const modal = document.getElementById('confirmation-modal');
+            const modalMessage = document.getElementById('modal-message');
+            const confirmAction = document.getElementById('confirm-action');
+            const modalCloseButtons = document.querySelectorAll('.modal-close');
+            let currentAction = null;
+            let currentOrderRow = null;
+            let currentOrderCard = null;
+
+            // Reject button handler
+            rejectButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    currentAction = 'reject';
+                    currentOrderRow = button.closest('tr');
+                    currentOrderCard = button.closest('.order-card');
+                    modalMessage.textContent = 'Are you sure you want to reject this order? This action cannot be undone.';
+                    confirmAction.className = 'btn confirm-action reject';
+                    confirmAction.textContent = 'Yes, Reject';
+                    modal.classList.add('show');
+                });
+            });
+
+            // Accept button handler
+            acceptButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    currentAction = 'accept';
+                    currentOrderRow = button.closest('tr');
+                    currentOrderCard = button.closest('.order-card');
+                    modalMessage.textContent = 'Are you sure you want to accept this order?';
+                    confirmAction.className = 'btn confirm-action accept';
+                    confirmAction.textContent = 'Yes, Accept';
+                    modal.classList.add('show');
+                });
+            });
+
+            // Modal close handler
+            modalCloseButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modal.classList.remove('show');
+                    currentAction = null;
+                    currentOrderRow = null;
+                    currentOrderCard = null;
+                });
+            });
+
+            // Confirm action handler
+            confirmAction.addEventListener('click', function() {
+                if (currentAction === 'reject') {
+                    // Update table row
+                    if (currentOrderRow) {
+                        currentOrderRow.querySelector('.order-status').textContent = 'Rejected';
+                        currentOrderRow.querySelector('.order-status').className = 'order-status status-rejected';
+                        currentOrderRow.querySelector('.action-buttons').innerHTML = `
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                        `;
+                    }
+                    // Update card view
+                    if (currentOrderCard) {
+                        currentOrderCard.querySelector('.order-card-status').textContent = 'Rejected';
+                        currentOrderCard.querySelector('.order-card-status').className = 'order-card-status status-rejected';
+                        currentOrderCard.querySelector('.order-card-footer').innerHTML = `
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                        `;
+                    }
+                    showToast('Order has been rejected.', 'danger');
+                } else if (currentAction === 'accept') {
+                    // Update table row
+                    if (currentOrderRow) {
+                        currentOrderRow.querySelector('.order-status').textContent = 'Accepted';
+                        currentOrderRow.querySelector('.order-status').className = 'order-status status-accepted';
+                        currentOrderRow.querySelector('.action-buttons').innerHTML = `
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-directions"></i> Navigate
+                            </button>
+                        `;
+                    }
+                    // Update card view
+                    if (currentOrderCard) {
+                        currentOrderCard.querySelector('.order-card-status').textContent = 'Accepted';
+                        currentOrderCard.querySelector('.order-card-status').className = 'order-card-status status-accepted';
+                        currentOrderCard.querySelector('.order-card-footer').innerHTML = `
+                            <button class="btn btn-primary btn-sm">
+                                <i class="fas fa-directions"></i> Navigate
+                            </button>
+                        `;
+                    }
+                    showToast('Order accepted successfully!', 'success');
+                    // Redirect to order details page with order ID
+                    const orderId = (currentOrderRow || currentOrderCard).querySelector('.order-id, .order-card-id').textContent;
+                    setTimeout(() => {
+                        window.location.href = `order-details.html?orderId=${encodeURIComponent(orderId)}`;
+                    }, 1000); // Delay to show toast
+                }
+                modal.classList.remove('show');
+                currentAction = null;
+                currentOrderRow = null;
+                currentOrderCard = null;
+            });
+
+            // Show toast notification
+            function showToast(message, type) {
+                const toast = document.querySelector('.toast');
+                const toastMessage = toast.querySelector('.toast-message');
+                
+                toast.className = `toast toast-${type}`;
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
+
+            // Close toast
+            const toastClose = document.querySelector('.toast-close');
+            toastClose.addEventListener('click', function() {
+                this.closest('.toast').classList.remove('show');
+            });
+
+            // Search orders
+            const searchInput = document.getElementById('search-orders');
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.orders-table tbody tr');
+                const cards = document.querySelectorAll('.order-card');
+
+                // Filter table rows
+                rows.forEach(row => {
+                    const orderId = row.querySelector('.order-id').textContent.toLowerCase();
+                    const customerName = row.querySelector('.customer-name').textContent.toLowerCase();
+                    const restaurant = row.cells[2].textContent.toLowerCase();
+                    if (orderId.includes(query) || customerName.includes(query) || restaurant.includes(query)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Filter card view
+                cards.forEach(card => {
+                    const orderId = card.querySelector('.order-card-id').textContent.toLowerCase();
+                    const customerName = card.querySelector('.order-card-body p:nth-child(1)').textContent.toLowerCase();
+                    const restaurant = card.querySelector('.order-card-body p:nth-child(3)').textContent.toLowerCase();
+                    if (orderId.includes(query) || customerName.includes(query) || restaurant.includes(query)) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Responsive adjustments
+            function handleResize() {
+                const isMobile = window.innerWidth <= 768;
+                document.querySelector('.orders-table').style.display = isMobile ? 'none' : 'table';
+                document.querySelector('.orders-list').style.display = isMobile ? 'block' : 'none';
+                
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    mainContent.classList.remove('expanded');
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            handleResize();
+        });
+    </script>
+</body>
+</html>

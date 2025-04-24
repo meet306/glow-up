@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowUp - Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7e57c2;
+            --primary-dark: #5e35b1;
+            --primary-light: #b39ddb;
+            --secondary-color: #ede7f6;
+            --text-color: #333;
+            --light-text: #f5f5f5;
+            --success-color: #66bb6a;
+            --danger-color: #ef5350;
+            --warning-color: #ffa726;
+            --info-color: #42a5f5;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient: linear-gradient(135deg, #7e57c2, #ab47bc);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: white; /* Set background to white */
+            color: #333; /* Set text color to #333 */
+            text-align: center; /* Center the text */
+            padding: 1rem; /* Adjust padding */
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically */
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo span {
+            color: var(--primary-light);
+        }
+
+        .main-content {
+            margin-top: 70px;
+            padding: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-title i {
+            margin-right: 0.5rem;
+        }
+
+        .step-indicator {
+            font-size: 1rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        .form-container {
+            max-width: 600px; /* Increased max width */
+            padding: 3rem; /* Increased padding */
+            margin: 0 auto; /* Center the form */
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: #fff;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(126, 87, 194, 0.3);
+            transform: scale(1.02);
+        }
+
+        .terms-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .terms-group input {
+            margin-right: 0.5rem;
+        }
+
+        .terms-link {
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .terms-link:hover {
+            color: var(--primary-dark);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background: var(--gradient);
+            color: var(--light-text);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #5e35b1, #8e24aa);
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(126, 87, 194, 0.5);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            width: 600px;
+            max-width: 90%;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 3000;
+        }
+
+        .toast {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            transform: translateX(150%);
+            transition: var(--transition);
+            max-width: 350px;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .toast-success .toast-icon {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .toast-danger .toast-icon {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .toast-message {
+            flex-grow: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            margin-left: 1rem;
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .hero-image {
+                max-width: 250px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .form-container {
+                max-width: 90%; /* Use 90% of the screen width */
+                padding: 2rem; /* Adjust padding */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+                max-width: 100%; /* Use 95% of the screen width */
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .step-indicator {
+                font-size: 0.9rem;
+            }
+
+            .hero-image {
+                max-width: 200px;
+            }
+
+            .form-input {
+                font-size: 0.9rem;
+            }
+
+            .modal {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Grow<span>Up</span></div>
+    </header>
+
+    <main class="main-content">
+        <div class="hero-section">
+            <img src="https://via.placeholder.com/300x200?text=Complete+Your+Profile" alt="Profile Image" class="hero-image">
+            <h1 class="page-title">
+                <i class="fas fa-user-plus"></i>
+                <span>Registration</span>
+            </h1>
+            <div class="step-indicator">Step 3 of 4</div>
+        </div>
+        <div class="form-container">
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" class="form-input" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="address1">Address Line 1</label>
+                    <input type="text" id="address1" class="form-input" placeholder="Enter your address" required>
+                </div>
+                <div class="form-group">
+                    <label for="address2">Address Line 2 (Optional)</label>
+                    <input type="text" id="address2" class="form-input" placeholder="Apartment, suite, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="address3">Address Line 3 (Optional)</label>
+                    <input type="text" id="address3" class="form-input" placeholder="Landmark, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" class="form-input" placeholder="Enter your city" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state" class="form-input" placeholder="Enter your state" required>
+                </div>
+                <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="text" id="pincode" class="form-input" placeholder="Enter your pincode" maxlength="6" required>
+                </div>
+                <div class="terms-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <span class="terms-link" id="terms-link">Terms and Conditions</span></label>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-arrow-right"></i> Continue
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="terms-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Terms and Conditions</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Welcome to GrowUp. By registering, you agree to the following terms:</p>
+                <ul>
+                    <li>You must provide accurate and complete information during registration.</li>
+                    <li>Your personal data will be handled as per our Privacy Policy.</li>
+                    <li>You are responsible for maintaining the confidentiality of your account.</li>
+                    <li>GrowUp reserves the right to suspend or terminate accounts for violations.</li>
+                    <li>Services are subject to availability and may change without notice.</li>
+                </ul>
+                <p>Please read the full terms on our website for detailed information.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn modal-close">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container">
+        <div class="toast toast-success">
+            <div class="toast-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="toast-message" id="toast-message">Registration successful!</div>
+            <button class="toast-close">×</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-form');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const dob = document.getElementById('dob').value;
+                const email = document.getElementById('email').value.trim();
+                const address1 = document.getElementById('address1').value.trim();
+                const city = document.getElementById('city').value.trim();
+                const state = document.getElementById('state').value.trim();
+                const pincode = document.getElementById('pincode').value.trim();
+                const terms = document.getElementById('terms').checked;
+
+                if (!name || !dob || !email || !address1 || !city || !state || !pincode || !terms) {
+                    showToast('Please fill all required fields and agree to terms.', 'danger');
+                    return;
+                }
+
+                if (!/^\d{6}$/.test(pincode)) {
+                    showToast('Please enter a valid 6-digit pincode.', 'danger');
+                    return;
+                }
+
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    showToast('Please enter a valid email address.', 'danger');
+                    return;
+                }
+
+                showToast('Registration successful! Please upload documents.', 'success');
+                setTimeout(() => {
+                    window.location.href = 'documents.html';
+                }, 2000);
+            });
+
+            document.getElementById('terms-link').addEventListener('click', function() {
+                document.getElementById('terms-modal').classList.add('show');
+            });
+
+            document.querySelectorAll('.modal-close').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.getElementById('terms-modal').classList.remove('show');
+                });
+            });
+
+            function showToast(message, type) {
+                const toast = document.querySelector('.toast');
+                const toastMessage = document.getElementById('toast-message');
+                toast.className = `toast toast-${type}`;
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
+
+            document.querySelector('.toast-close').addEventListener('click', function() {
+                this.closest('.toast').classList.remove('show');
+            });
+        });
+    </script>
+</body>
+</html>
